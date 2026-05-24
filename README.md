@@ -78,4 +78,8 @@ PREFiX
 * **声音与通知适配**：引入 Offscreen Document 解决 Service Worker 下原生 DOM 播放 `dongdong.mp3` 的限制，并采用 `chrome.notifications` 重构了桌面通知弹窗，修复了原生 `Notification` 构造器报错。
 * **竞态与稳定性修复**：完美修复了 Popup 在 MV3 独立作用域下的各种 DOM Ready 初始化竞态报错、滚动条位置抖动，并移除了 avalon.js 内部的 `setTimeout("string")` 动态求值警告。
 
-基于开源项目 [Ripple](https://github.com/riophae/Ripple), [Avalon](https://github.com/RubyLouvre/avalon), [jQuery](https://github.com/jquery/jquery) 开发.
+**ver 1.1.0 (多账号切换与图片极速载入版)**
+* **解锁饭否多账号极速切换**：重构了 `options.html` 与设置页控制器，引入了高档玻璃质感的多账号卡片列表，支持在选项卡内对已登入账号进行无感瞬间“切换”、“退出”和安全登录多个新账号。
+* **大图预览瞬间秒开优化**：在弹窗大图预览时保留饭否云端 `@596w_1l.jpg` 压缩处理后缀，大幅缩减 99% 的大图网络下载体积与时间开销，实现大图预览秒开瞬亮，同时完好保留右键获取无损超清原图功能。
+
+基于开源项目 [Ripple](https://github.com/riophae/Ripple), [Avalon](https://github.com/RubyLouvre/avalon), [jQuery](https://github.com/jquery/jquery) 开发。
