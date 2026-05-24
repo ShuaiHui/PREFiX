@@ -4,10 +4,126 @@ $(function() {
 	var PREFiX = bg_win.PREFiX;
 	var lscache = bg_win.lscache;
 
-	$('#switch-account').click(function(e) {
-		PREFiX.reset();
-		close();
+	// --- Multi-Account Switching Support ---
+	var accountsList = lscache.get('accounts_list') || [];
+	if (!Array.isArray(accountsList)) {
+		accountsList = [];
+	}
+
+	// Backward compatibility: if active account is logged in but list is empty, initialize list with active account
+	if (accountsList.length === 0 && PREFiX.account && PREFiX.accessToken) {
+		accountsList.push({
+			accessToken: PREFiX.accessToken,
+			account: PREFiX.account
+		});
+		lscache.set('accounts_list', accountsList);
+	}
+
+	function renderAccounts() {
+		var $container = $('#accounts-list-container');
+		$container.empty();
+
+		if (accountsList.length === 0) {
+			$container.html('<div style="color: #94a3b8; font-size: 13px; padding: 10px 0;">您当前尚未登入任何饭否账号，请点击下方按钮登入。</div>');
+			return;
+		}
+
+		accountsList.forEach(function(item, idx) {
+			var isActive = false;
+			if (PREFiX.accessToken && 
+				PREFiX.account && 
+				String(PREFiX.account.id) === String(item.account.id)) {
+				isActive = true;
+			}
+
+			var name = item.account.name || item.account.screen_name;
+			var avatar = item.account.profile_image_url || '/icons/48.png';
+
+			var $item = $('<div class="account-item"></div>');
+			
+			var $avatarImg = $('<img />').attr('src', avatar).attr('alt', name);
+			$item.append($avatarImg);
+
+			var $info = $('<div class="account-item-info"></div>');
+			$info.append($('<div class="account-item-name"></div>').text(name));
+			$info.append($('<div class="account-item-instance"></div>').text('@' + item.account.id));
+			$item.append($info);
+
+			if (isActive) {
+				$item.append($('<span class="account-active-badge">当前活跃</span>'));
+			}
+
+			var $actions = $('<div class="account-actions"></div>');
+			if (!isActive) {
+				var $switchBtn = $('<button class="account-btn account-btn-switch"></button>')
+					.text('切换')
+					.attr('data-index', idx);
+				$actions.append($switchBtn);
+			}
+
+			var $logoutBtn = $('<button class="account-btn account-btn-logout"></button>')
+				.text('退出')
+				.attr('data-index', idx);
+			$actions.append($logoutBtn);
+			
+			$item.append($actions);
+			$container.append($item);
+		});
+	}
+
+	// Switch Account Click Handler
+	$(document).on('click', '.account-btn-switch', function() {
+		var idx = parseInt($(this).attr('data-index'), 10);
+		var targetAcc = accountsList[idx];
+		if (targetAcc) {
+			lscache.set('access_token', targetAcc.accessToken);
+			lscache.set('account_details', targetAcc.account);
+			location.reload();
+		}
 	});
+
+	// Logout Click Handler
+	$(document).on('click', '.account-btn-logout', function() {
+		var idx = parseInt($(this).attr('data-index'), 10);
+		var targetAcc = accountsList[idx];
+		if (!targetAcc) return;
+
+		var isActive = false;
+		if (PREFiX.accessToken && 
+			PREFiX.account && 
+			String(PREFiX.account.id) === String(targetAcc.account.id)) {
+			isActive = true;
+		}
+
+		// Remove from list
+		accountsList.splice(idx, 1);
+		lscache.set('accounts_list', accountsList);
+
+		if (isActive) {
+			if (accountsList.length > 0) {
+				// Switch to first remaining account
+				lscache.set('access_token', accountsList[0].accessToken);
+				lscache.set('account_details', accountsList[0].account);
+			} else {
+				// No accounts left, clear active session
+				lscache.remove('access_token');
+				lscache.remove('account_details');
+				PREFiX.reset();
+			}
+		}
+
+		location.reload();
+	});
+
+	// Add Account Click Handler
+	$(document).on('click', '#add-account', function(e) {
+		lscache.remove('access_token');
+		lscache.remove('account_details');
+		location.reload();
+	});
+
+	renderAccounts();
+	// ----------------------------------------
 	$('#version').text(PREFiX.version);
 
 	var current = PREFiX.settings.current;
@@ -64,14 +180,7 @@ $(function() {
 		$('#cacheAmount').text($cache_amount.val());
 	}).trigger('change');
 
-	if (PREFiX.account) {
-		$('#username').
-		text('@' + PREFiX.account.name + ' (' + PREFiX.account.id + ')').
-		prop('href', 'https://fanfou.com/' + PREFiX.account.id);
-	} else {
-		$('#user-info').text('您还没有登录饭否账号，请点击下面的按钮继续。')
-		$('#switch-account').text('登入账号');
-	}
+
 
 	var last_used_page = lscache.get('last_used_page') || 0;
 	var page_loading_timeout;

@@ -294,6 +294,27 @@ function updateDetails(flag) {
 	var user = Ripple(PREFiX.accessToken);
 	var verify = user.verify().next(function(details) {
 		lscache.set('account_details', details);
+
+		// Auto append/update the verified account details in accounts_list
+		var accountsList = lscache.get('accounts_list') || [];
+		if (!Array.isArray(accountsList)) accountsList = [];
+		var exists = false;
+		for (var i = 0; i < accountsList.length; i++) {
+			if (String(accountsList[i].account.id) === String(details.id)) {
+				accountsList[i].accessToken = PREFiX.accessToken;
+				accountsList[i].account = details;
+				exists = true;
+				break;
+			}
+		}
+		if (!exists) {
+			accountsList.push({
+				accessToken: PREFiX.accessToken,
+				account: details
+			});
+		}
+		lscache.set('accounts_list', accountsList);
+
 		if (details.friends_count >= 85 && is_first_run) {
 			settings.current.autoFlushCache = true;
 			settings.save();

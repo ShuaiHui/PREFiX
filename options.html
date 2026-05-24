@@ -7,6 +7,103 @@
 		<link rel="stylesheet" href="css/options.css"/>
 		<link rel="stylesheet" href="css/chrome-shared.css"/>
 		<script src="js/bootstrap-options.js"></script>
+		<style>
+			.account-item {
+				display: flex;
+				align-items: center;
+				padding: 12px 16px;
+				background: rgba(255, 255, 255, 0.02);
+				border: 1px solid rgba(255, 255, 255, 0.06);
+				border-radius: 8px;
+				margin-bottom: 10px;
+				gap: 12px;
+				transition: all 0.2s ease;
+			}
+			.account-item:hover {
+				background: rgba(255, 255, 255, 0.04);
+				border-color: rgba(255, 255, 255, 0.1);
+			}
+			.account-item img {
+				width: 42px;
+				height: 42px;
+				border-radius: 50%;
+				border: 1px solid rgba(255, 255, 255, 0.08);
+			}
+			.account-item-info {
+				flex: 1;
+				text-align: left;
+			}
+			.account-item-name {
+				font-weight: 600;
+				color: #fff;
+				font-size: 14px;
+				margin-bottom: 2px;
+			}
+			.account-item-instance {
+				font-size: 12px;
+				color: #94a3b8;
+			}
+			.account-active-badge {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				box-sizing: border-box;
+				background: rgba(16, 185, 129, 0.12);
+				color: #10b981;
+				border: 1px solid rgba(16, 185, 129, 0.25);
+				border-radius: 12px;
+				padding: 0 8px;
+				font-size: 11px;
+				font-weight: 600;
+				margin-right: 8px;
+				height: 20px;
+				line-height: 1;
+				vertical-align: middle;
+			}
+			.account-actions {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+			}
+			.account-btn {
+				-webkit-appearance: none;
+				appearance: none;
+				box-sizing: border-box;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				padding: 0 10px;
+				border-radius: 12px;
+				font-size: 11px;
+				font-weight: 600;
+				cursor: pointer;
+				transition: all 0.2s ease;
+				outline: none;
+				border: none;
+				margin: 0 !important;
+				height: 20px !important;
+				line-height: 1 !important;
+				vertical-align: middle;
+			}
+			.account-btn-switch {
+				background: rgba(99, 102, 241, 0.08);
+				color: #6366f1;
+				border: 1px solid rgba(99, 102, 241, 0.2);
+			}
+			.account-btn-switch:hover {
+				background: rgba(99, 102, 241, 0.16);
+				border-color: rgba(99, 102, 241, 0.35);
+			}
+			.account-btn-logout {
+				background: rgba(239, 68, 68, 0.08);
+				color: #ef4444;
+				border: 1px solid rgba(239, 68, 68, 0.2);
+			}
+			.account-btn-logout:hover {
+				background: rgba(239, 68, 68, 0.16);
+				border-color: rgba(239, 68, 68, 0.35);
+			}
+		</style>
 	</head>
 	<body>
 	<div id="wrapper">
@@ -27,8 +124,15 @@
 							<h2>基本设置</h2>
 						</header>
 						<ul>
-							<h3>账号</h3>
-							<li><span id="user-info">您已以 <a target="_blank" id="username"></a> 的身份登录. </span><br /><button id="switch-account">切换到另一个账号...</button></li>
+							<h3>账号管理 (多账号切换)</h3>
+							<li>
+								<div id="accounts-list-container">
+									<!-- Dynamically populated -->
+								</div>
+								<div style="margin-top: 15px;">
+									<button id="add-account" class="chrome-shared-btn">添加新的饭否账号...</button>
+								</div>
+							</li>
 						</ul>
 						<ul>
 							<h3>界面</h3>
