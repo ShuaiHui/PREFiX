@@ -2034,7 +2034,9 @@ Ripple.events.observe('process_status', function processStatus(status) {
 	status.current_replied = false;
 
 	if (status.photo) {
-		status.photo.largeurl = status.photo.largeurl.replace('@596w_1l.jpg', '');
+		// Keep the @596w_1l.jpg suffix to load the fast, web-optimized 596px-width preview image.
+		// Stripping it forces downloading the massive, multi-megabyte full-resolution raw photo, causing slow loads.
+		// status.photo.largeurl = status.photo.largeurl.replace('@596w_1l.jpg', '');
 	} else {
 		status.photo = {
 			largeurl: '',
